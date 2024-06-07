@@ -1,0 +1,13 @@
+{
+  "name": "api",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "DATN NguyenManhTien 194764 64PM2",
+  "main": "src/server.js",
+  "author": "NguyenManhTien",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
