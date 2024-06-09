@@ -4,6 +4,7 @@ import exitHook from 'async-exit-hook';
 import { env } from '~/config/environment';
 import { CLOSE_DB, CONNECT_DB } from '~/config/mongodb';
 import { APIs_V1 } from '~/routes/v1';
+import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 
 const START_SEVER = () => {
   const app = express();
@@ -11,6 +12,9 @@ const START_SEVER = () => {
   app.use(express.json());
 
   app.use('/v1', APIs_V1);
+
+  // Middleware handling
+  app.use(errorHandlingMiddleware);
 
   app.listen(env.APP_PORT, env.APP_HOST, () => {
     console.log(`Server is running successfully at Host: http://${env.APP_HOST}:${env.APP_PORT}/`);
