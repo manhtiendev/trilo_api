@@ -1,6 +1,5 @@
 import slugify from 'slugify';
-
-// import { slugify } from '~/utils/formatters';
+import { boardModel } from '~/models/boardModel';
 
 const createNew = async (reqBody) => {
   // eslint-disable-next-line no-useless-catch
@@ -12,7 +11,12 @@ const createNew = async (reqBody) => {
         lower: true,
       }),
     };
-    return newBoard;
+
+    const createdBoard = await boardModel.createNew(newBoard);
+
+    const getNewBoard = await boardModel.findOneById(createdBoard.insertedId);
+
+    return getNewBoard;
   } catch (error) {
     throw error;
   }
