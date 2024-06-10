@@ -30,7 +30,7 @@ const START_SEVER = () => {
 (async () => {
   try {
     console.log('Connecting to MongoDB Cloud Atlas...');
-    await CONNECT_DB;
+    await CONNECT_DB();
     console.log('Connected to MongoDB Cloud Atlas');
     START_SEVER();
   } catch (error) {

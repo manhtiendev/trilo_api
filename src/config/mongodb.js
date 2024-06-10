@@ -18,7 +18,9 @@ export const CONNECT_DB = async () => {
 };
 
 export const GET_DB = () => {
-  if (!triloDatabaseInstance) throw new Error('Must connect to Database first!');
+  if (!triloDatabaseInstance) {
+    throw new Error('Must connect to Database first!');
+  }
   return triloDatabaseInstance;
 };
 
