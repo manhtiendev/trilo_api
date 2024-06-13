@@ -1,5 +1,5 @@
-import { StatusCodes } from 'http-status-codes';
-import { boardService } from '~/services/boardService';
+import { StatusCodes } from "http-status-codes";
+import { boardService } from "~/services/boardService";
 
 const createNew = async (req, res, next) => {
   try {
@@ -11,6 +11,17 @@ const createNew = async (req, res, next) => {
   }
 };
 
+const getDetails = async (req, res, next) => {
+  try {
+    const board = await boardService.getDetails(req.params.id);
+
+    res.status(StatusCodes.OK).json(board);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const boardController = {
   createNew,
+  getDetails,
 };
