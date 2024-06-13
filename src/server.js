@@ -1,17 +1,21 @@
 /* eslint-disable no-console */
-import express from 'express';
-import exitHook from 'async-exit-hook';
-import { env } from '~/config/environment';
-import { CLOSE_DB, CONNECT_DB } from '~/config/mongodb';
-import { APIs_V1 } from '~/routes/v1';
-import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
+import express from "express";
+import cors from "cors";
+import { corsOptions } from "./config/cors";
+import exitHook from "async-exit-hook";
+import { env } from "~/config/environment";
+import { CLOSE_DB, CONNECT_DB } from "~/config/mongodb";
+import { APIs_V1 } from "~/routes/v1";
+import { errorHandlingMiddleware } from "./middlewares/errorHandlingMiddleware";
 
 const START_SEVER = () => {
   const app = express();
 
+  app.use(cors(corsOptions));
+
   app.use(express.json());
 
-  app.use('/v1', APIs_V1);
+  app.use("/v1", APIs_V1);
 
   // Middleware handling
   app.use(errorHandlingMiddleware);
@@ -29,9 +33,9 @@ const START_SEVER = () => {
 // Immediately Invoked Function Expression (IIFE) / Anonymous Async Function
 (async () => {
   try {
-    console.log('Connecting to MongoDB Cloud Atlas...');
+    console.log("Connecting to MongoDB Cloud Atlas...");
     await CONNECT_DB();
-    console.log('Connected to MongoDB Cloud Atlas');
+    console.log("Connected to MongoDB Cloud Atlas");
     START_SEVER();
   } catch (error) {
     console.error(error);
