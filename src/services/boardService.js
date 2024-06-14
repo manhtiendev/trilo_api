@@ -1,7 +1,8 @@
-import { StatusCodes } from "http-status-codes";
-import slugify from "slugify";
-import { boardModel } from "~/models/boardModel";
-import ApiError from "~/utils/ApiError";
+import { StatusCodes } from 'http-status-codes';
+import slugify from 'slugify';
+import { boardModel } from '~/models/boardModel';
+import ApiError from '~/utils/ApiError';
+import { cloneDeep } from 'lodash';
 
 const createNew = async (reqBody) => {
   // eslint-disable-next-line no-useless-catch
@@ -9,7 +10,7 @@ const createNew = async (reqBody) => {
     const newBoard = {
       ...reqBody,
       slug: slugify(reqBody.title, {
-        locale: "vi",
+        locale: 'vi',
         lower: true,
       }),
     };
@@ -28,10 +29,20 @@ const getDetails = async (boardId) => {
   try {
     const board = await boardModel.getDetails(boardId);
     if (!board) {
-      throw new ApiError(StatusCodes.NOT_FOUND, "Board not found!");
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found!');
     }
 
-    return board;
+    const resBoard = cloneDeep(board);
+    resBoard.columns.forEach((col) => {
+      // equals MongoDB methods
+      col.cards = resBoard.cards.filter((card) => card.columnId.equals(col._id));
+
+      // col.cards = resBoard.cards.filter((card) => card.columnId.toString() === col._id.toString());
+    });
+
+    delete resBoard.cards;
+
+    return resBoard;
   } catch (error) {
     throw new Error(error);
   }
