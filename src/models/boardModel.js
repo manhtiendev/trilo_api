@@ -1,12 +1,12 @@
-const Joi = require('joi');
-import { GET_DB } from '~/config/mongodb';
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators';
-import { ObjectId } from 'mongodb';
-import { BOARD_TYPES } from '~/utils/constants';
-import { columnModel } from './columnModel';
-import { cardModel } from './cardModel';
+const Joi = require("joi");
+import { GET_DB } from "~/config/mongodb";
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "~/utils/validators";
+import { ObjectId } from "mongodb";
+import { BOARD_TYPES } from "~/utils/constants";
+import { columnModel } from "./columnModel";
+import { cardModel } from "./cardModel";
 
-const BOARD_COLLECTION_NAME = 'boards';
+const BOARD_COLLECTION_NAME = "boards";
 const BOARD_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required().min(3).max(50).trim().strict(),
   slug: Joi.string().required().min(3).trim().strict(),
@@ -15,8 +15,8 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
   columnOrderIds: Joi.array()
     .items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
     .default([]),
-  createdAt: Joi.date().timestamp('javascript').default(Date.now),
-  updatedAt: Joi.date().timestamp('javascript').default(null),
+  createdAt: Joi.date().timestamp("javascript").default(Date.now),
+  updatedAt: Joi.date().timestamp("javascript").default(null),
   _destroy: Joi.boolean().default(false),
 });
 
@@ -62,22 +62,22 @@ const getDetails = async (id) => {
             {
               $lookup: {
                 from: columnModel.COLUMN_COLLECTION_NAME,
-                localField: '_id',
-                foreignField: 'boardId',
-                as: 'columns',
+                localField: "_id",
+                foreignField: "boardId",
+                as: "columns",
               },
             },
             {
               $lookup: {
                 from: cardModel.CARD_COLLECTION_NAME,
-                localField: '_id',
-                foreignField: 'boardId',
-                as: 'cards',
+                localField: "_id",
+                foreignField: "boardId",
+                as: "cards",
               },
             },
           ])
           .toArray()
-      )[0] || {}
+      )[0] || null
     );
   } catch (error) {
     throw new Error(error);
