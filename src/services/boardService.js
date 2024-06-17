@@ -1,8 +1,8 @@
-import { StatusCodes } from 'http-status-codes';
-import slugify from 'slugify';
-import { boardModel } from '~/models/boardModel';
-import ApiError from '~/utils/ApiError';
-import { cloneDeep } from 'lodash';
+import { StatusCodes } from "http-status-codes";
+import slugify from "slugify";
+import { boardModel } from "~/models/boardModel";
+import ApiError from "~/utils/ApiError";
+import { cloneDeep } from "lodash";
 
 const createNew = async (reqBody) => {
   // eslint-disable-next-line no-useless-catch
@@ -10,7 +10,7 @@ const createNew = async (reqBody) => {
     const newBoard = {
       ...reqBody,
       slug: slugify(reqBody.title, {
-        locale: 'vi',
+        locale: "vi",
         lower: true,
       }),
     };
@@ -29,7 +29,7 @@ const getDetails = async (boardId) => {
   try {
     const board = await boardModel.getDetails(boardId);
     if (!board) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found!');
+      throw new ApiError(StatusCodes.NOT_FOUND, "Board not found!");
     }
 
     const resBoard = cloneDeep(board);
@@ -48,7 +48,18 @@ const getDetails = async (boardId) => {
   }
 };
 
+const update = async (boardId, reqBody) => {
+  try {
+    const updatedBoard = await boardModel.update(boardId, { ...reqBody, updatedAt: Date.now() });
+
+    return updatedBoard;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export const boardService = {
   createNew,
   getDetails,
+  update,
 };

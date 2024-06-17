@@ -34,21 +34,19 @@ const createNew = async (data) => {
 
 const pushCardOderIds = async (card) => {
   try {
-    return (
-      await GET_DB()
-        .collection(COLUMN_COLLECTION_NAME)
-        .findOneAndUpdate(
-          {
-            _id: new ObjectId(card.columnId),
-          },
-          {
-            $push: { cardOrderIds: new ObjectId(card._id) },
-          },
-          {
-            returnDocument: "after",
-          }
-        )
-    ).value;
+    return await GET_DB()
+      .collection(COLUMN_COLLECTION_NAME)
+      .findOneAndUpdate(
+        {
+          _id: new ObjectId(card.columnId),
+        },
+        {
+          $push: { cardOrderIds: new ObjectId(card._id) },
+        },
+        {
+          returnDocument: "after",
+        }
+      );
   } catch (error) {
     throw new Error(error);
   }
