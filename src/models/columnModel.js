@@ -1,9 +1,9 @@
-import Joi from "joi";
-import { ObjectId } from "mongodb";
-import { GET_DB } from "~/config/mongodb";
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "~/utils/validators";
+import Joi from 'joi';
+import { ObjectId } from 'mongodb';
+import { GET_DB } from '~/config/mongodb';
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators';
 
-const COLUMN_COLLECTION_NAME = "columns";
+const COLUMN_COLLECTION_NAME = 'columns';
 const COLUMN_COLLECTION_SCHEMA = Joi.object({
   boardId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   title: Joi.string().required().min(3).max(50).trim().strict(),
@@ -12,12 +12,12 @@ const COLUMN_COLLECTION_SCHEMA = Joi.object({
     .items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
     .default([]),
 
-  createdAt: Joi.date().timestamp("javascript").default(Date.now),
-  updatedAt: Joi.date().timestamp("javascript").default(null),
+  createdAt: Joi.date().timestamp('javascript').default(Date.now),
+  updatedAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false),
 });
 
-const INVALID_UPDATE_FIELDS = ["_id", "createdAt", "boardId"];
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt', 'boardId'];
 
 const validate = async (data) => {
   return await COLUMN_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false });
@@ -46,7 +46,7 @@ const pushCardOderIds = async (card) => {
           $push: { cardOrderIds: new ObjectId(card._id) },
         },
         {
-          returnDocument: "after",
+          returnDocument: 'after',
         }
       );
   } catch (error) {
@@ -71,6 +71,11 @@ const update = async (columnId, updateData) => {
         delete updateData[fieldName];
       }
     });
+
+    if (updateData.cardOrderIds) {
+      updateData.cardOrderIds = updateData.cardOrderIds.map((cardId) => new ObjectId(cardId));
+    }
+
     return await GET_DB()
       .collection(COLUMN_COLLECTION_NAME)
       .findOneAndUpdate(
@@ -81,7 +86,7 @@ const update = async (columnId, updateData) => {
           $set: updateData,
         },
         {
-          returnDocument: "after",
+          returnDocument: 'after',
         }
       );
   } catch (error) {

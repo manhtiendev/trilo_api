@@ -1,12 +1,12 @@
-const Joi = require("joi");
-import { GET_DB } from "~/config/mongodb";
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "~/utils/validators";
-import { ObjectId } from "mongodb";
-import { BOARD_TYPES } from "~/utils/constants";
-import { columnModel } from "./columnModel";
-import { cardModel } from "./cardModel";
+const Joi = require('joi');
+import { GET_DB } from '~/config/mongodb';
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators';
+import { ObjectId } from 'mongodb';
+import { BOARD_TYPES } from '~/utils/constants';
+import { columnModel } from './columnModel';
+import { cardModel } from './cardModel';
 
-const BOARD_COLLECTION_NAME = "boards";
+const BOARD_COLLECTION_NAME = 'boards';
 const BOARD_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required().min(3).max(50).trim().strict(),
   slug: Joi.string().required().min(3).trim().strict(),
@@ -15,12 +15,12 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
   columnOrderIds: Joi.array()
     .items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
     .default([]),
-  createdAt: Joi.date().timestamp("javascript").default(Date.now),
-  updatedAt: Joi.date().timestamp("javascript").default(null),
+  createdAt: Joi.date().timestamp('javascript').default(Date.now),
+  updatedAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false),
 });
 
-const INVALID_UPDATE_FIELDS = ["_id", "createdAt"];
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt'];
 
 const validate = async (data) => {
   return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false });
@@ -47,7 +47,7 @@ const pushColumnOderIds = async (col) => {
           $push: { columnOrderIds: new ObjectId(col._id) },
         },
         {
-          returnDocument: "after",
+          returnDocument: 'after',
         }
       );
   } catch (error) {
@@ -84,17 +84,17 @@ const getDetails = async (id) => {
             {
               $lookup: {
                 from: columnModel.COLUMN_COLLECTION_NAME,
-                localField: "_id",
-                foreignField: "boardId",
-                as: "columns",
+                localField: '_id',
+                foreignField: 'boardId',
+                as: 'columns',
               },
             },
             {
               $lookup: {
                 from: cardModel.CARD_COLLECTION_NAME,
-                localField: "_id",
-                foreignField: "boardId",
-                as: "cards",
+                localField: '_id',
+                foreignField: 'boardId',
+                as: 'cards',
               },
             },
           ])
@@ -113,6 +113,11 @@ const update = async (boardId, updateData) => {
         delete updateData[fieldName];
       }
     });
+
+    if (updateData.columnOrderIds) {
+      updateData.columnOrderIds = updateData.columnOrderIds.map((colId) => new ObjectId(colId));
+    }
+
     return await GET_DB()
       .collection(BOARD_COLLECTION_NAME)
       .findOneAndUpdate(
@@ -123,7 +128,7 @@ const update = async (boardId, updateData) => {
           $set: updateData,
         },
         {
-          returnDocument: "after",
+          returnDocument: 'after',
         }
       );
   } catch (error) {

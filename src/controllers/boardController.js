@@ -1,5 +1,5 @@
-import { StatusCodes } from "http-status-codes";
-import { boardService } from "~/services/boardService";
+import { StatusCodes } from 'http-status-codes';
+import { boardService } from '~/services/boardService';
 
 const createNew = async (req, res, next) => {
   try {
@@ -31,8 +31,19 @@ const update = async (req, res, next) => {
   }
 };
 
+const moveCardOtherColumn = async (req, res, next) => {
+  try {
+    const result = await boardService.moveCardOtherColumn(req.body);
+
+    res.status(StatusCodes.OK).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const boardController = {
   createNew,
   getDetails,
   update,
+  moveCardOtherColumn,
 };
